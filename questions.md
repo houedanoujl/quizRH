@@ -1,0 +1,24 @@
+# Questionnaire CiprelRH : les 18 questions oui/non
+
+Source : `supabase/migrations/0001_ciprel_quiz.sql` (table `ciprel_questions`). « Oui » rapporte 1 point à la soft skill de la question, « Non » 0 point.
+
+| N° | Question | Soft skill | Image |
+|---|---|---|---|
+| 1 | Face à un défi complexe, préférez-vous chercher la solution avec d'autres ? | Force collective | `/images/questions/1a.webp` |
+| 2 | En cas de conflit, cherchez-vous une solution juste pour toutes les parties, même si elle prend plus de temps ? | Équité | `/images/questions/2a.webp` |
+| 3 | Un objectif ambitieux vous donne-t-il envie de vous dépasser ? | Engagement | `/images/questions/3a.webp` |
+| 4 | Quand une nouvelle procédure est mise en place, la suivez-vous scrupuleusement ? | Respect | `/images/questions/4a.webp` |
+| 5 | Pour résoudre un problème, aimez-vous essayer de nouvelles approches ? | Innovation | `/images/questions/5a.webp` |
+| 6 | En réunion, partagez-vous volontiers vos idées ? | Convivialité | `/images/questions/6a.webp` |
+| 7 | Êtes-vous plus motivé·e par un objectif commun que par une contribution individuelle ? | Force collective | `/images/questions/7a.webp` |
+| 8 | Pour attribuer des ressources, privilégiez-vous un partage équitable entre tous ? | Équité | `/images/questions/8a.webp` |
+| 9 | Après une réussite, avez-vous envie de relever un défi encore plus grand ? | Engagement | `/images/questions/9a.webp` |
+| 10 | Face à une nouvelle technologie, aimez-vous en explorer toutes les fonctionnalités ? | Innovation | `/images/questions/10a.webp` |
+| 11 | Quand votre idée est rejetée, cherchez-vous un compromis avec les autres ? | Convivialité | `/images/questions/11b.webp` |
+| 12 | Préférez-vous présenter un travail en équipe plutôt que seul·e ? | Force collective | `/images/questions/12a.webp` |
+| 13 | Dans une équipe, veillez-vous à ce que chacun ait les mêmes opportunités ? | Équité | `/images/questions/13a.webp` |
+| 14 | Quand vous commencez un projet, le menez-vous à bien malgré les obstacles ? | Engagement | `/images/questions/14a.webp` |
+| 15 | Respectez-vous une règle même quand elle semble ralentir le travail ? | Respect | `/images/questions/15a.webp` |
+| 16 | Dans un projet créatif, osez-vous des idées originales, même risquées ? | Innovation | `/images/questions/16a.webp` |
+| 17 | Pendant une pause, aimez-vous discuter avec vos collègues ? | Convivialité | `/images/questions/17a.webp` |
+| 18 | En situation d'urgence, misez-vous d'abord sur la coordination avec l'équipe ? | Force collective | `/images/questions/18a.webp` |
