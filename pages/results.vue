@@ -1,62 +1,16 @@
 <script setup>
-let html2canvas
-if (process.client) {
-    html2canvas = (await import('html2canvas')).default
-}
 const store = useQuestionnaireStore()
 const results = computed(() => store.results)
-const canShare = ref(false)
+const topSkills = computed(() => results.value?.softSkillsTriees.slice(0, 2).map(s => s.label) ?? [])
 
 const retournerAccueil = () => {
     store.resetQuestionnaire()
     navigateTo('/')
 }
 
-const capture = async () => {
-    const element = document.getElementById('capture-zone')
-    if (!element || !html2canvas) return null
-    return html2canvas(element, {
-        useCORS: true,
-        scale: 2,
-        backgroundColor: '#e6f3f9'
-    })
-}
-
-const captureScreen = async () => {
-    const canvas = await capture()
-    if (!canvas) return
-    const link = document.createElement('a')
-    link.download = 'resultats-ciprel.png'
-    link.href = canvas.toDataURL('image/png')
-    link.click()
-}
-
-const shareScreenshot = async () => {
-    const canvas = await capture()
-    if (!canvas) return
-    canvas.toBlob(async (blob) => {
-        const file = new File([blob], 'resultats-ciprel.png', { type: 'image/png' })
-        const shareData = {
-            files: [file],
-            title: 'Mes résultats CIPREL',
-            text: 'Mes résultats du questionnaire d\'orientation CIPREL'
-        }
-        try {
-            await navigator.share(shareData)
-        } catch (err) {
-            console.log('Partage annulé :', err)
-        }
-    }, 'image/png')
-}
-
 onMounted(() => {
     // Pas de résultats (page rechargée ou accès direct) : retour à l'accueil.
-    if (!store.results || !store.userData) {
-        navigateTo('/')
-        return
-    }
-    const probe = new File([''], 'test.png', { type: 'image/png' })
-    canShare.value = !!(navigator.share && navigator.canShare?.({ files: [probe] }))
+    if (!store.results || !store.userData) navigateTo('/')
 })
 </script>
 
@@ -92,13 +46,9 @@ onMounted(() => {
             </section>
         </div>
 
+        <ShareResults v-if="results" :departement="results.departement" :skills="topSkills" />
+
         <div v-if="results" class="actions">
-            <button v-if="canShare" class="btn" type="button" @click="shareScreenshot">
-                <AppIcon name="share" :size="18" />Partager mon évaluation
-            </button>
-            <button class="btn" :class="{ ghost: canShare }" type="button" @click="captureScreen">
-                <AppIcon name="download" :size="18" />Télécharger mon évaluation
-            </button>
             <button class="btn ghost" type="button" @click="retournerAccueil">
                 <AppIcon name="home" :size="18" />Retour à l'accueil
             </button>

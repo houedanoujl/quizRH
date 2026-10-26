@@ -86,12 +86,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   width: 36px; height: 36px; border-radius: 50%; flex: none;
   display: grid; place-items: center; border: 3px solid var(--ink); background: var(--surface);
 }
-.choice.yes { background: var(--orange); }
-.choice.yes:hover:not(:disabled) { background: var(--orange-hover); }
-.choice.no { color: var(--navy); }
-.choice.no:hover:not(:disabled) { background: #f1f7fb; }
-.choice.selected { background: var(--orange-tint); color: var(--ink); box-shadow: 0 0 0 5px #ffd9ae; }
-.choice.selected .mark { background: var(--orange); }
+/* Oui et Non partagent le même état neutre ; seule la réponse cliquée passe en orange. */
+.choice { color: var(--navy); }
+.choice:hover:not(:disabled) { background: #f1f7fb; }
+.choice.selected,
+.choice.selected:hover:not(:disabled) { background: var(--orange); color: var(--ink); box-shadow: 0 0 0 5px #ffd9ae; }
 .hint { display: none; font-size: .9rem; color: var(--ink-2); }
 /* Très petits écrans : pastille et marges réduites pour que Oui / Non tiennent côte à côte. */
 @media (max-width: 359px) {
