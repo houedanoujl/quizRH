@@ -47,3 +47,6 @@ Thumbs.db
 node_modules
 
 .env
+
+# Borne (Electron)
+dist-borne

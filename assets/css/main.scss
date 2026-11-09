@@ -48,6 +48,11 @@
     caret-color: var(--orange);
   }
   #__nuxt { min-height: 100vh; }
+  /* Borne tactile : pas de zoom au double-tap, pas de sélection ni de glisser d'image. */
+  html { touch-action: manipulation; }
+  body { user-select: none; -webkit-user-select: none; overscroll-behavior: none; }
+  input, textarea { user-select: text; -webkit-user-select: text; }
+  img { -webkit-user-drag: none; }
   h1, h2, h3 { font-family: var(--font-display); line-height: 1.1; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
   p { margin: 0; }
   a { color: inherit; text-underline-offset: 3px; }

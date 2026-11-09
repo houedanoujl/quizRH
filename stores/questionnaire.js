@@ -1,55 +1,22 @@
 import { defineStore } from 'pinia'
+import { QUESTIONS, SOFT_SKILLS } from '~/data/questions'
+import { METIERS, metierPour } from '~/data/metiers'
 
-// Soft skills évaluées, dans l'ordre d'affichage par défaut.
-export const SOFT_SKILLS = {
-  forceCollective: 'Force collective',
-  equite: 'Équité',
-  engagement: 'Engagement',
-  respect: 'Respect',
-  innovation: 'Innovation',
-  convivialite: 'Convivialité'
-}
+export { SOFT_SKILLS }
 
 export const useQuestionnaireStore = defineStore('questionnaire', {
   state: () => ({
     userData: null,
-    // Chargées depuis Supabase (table ciprel_questions) :
-    // [{ id, position, texte, image, categorie }]
-    questions: [],
-    isLoading: false,
-    loadError: null,
-    departements: {
-      'Ressources Humaines': {
-        prioritaires: ['respect', 'equite'],
-        secondaires: ['convivialite']
-      },
-      'Production': {
-        prioritaires: ['engagement', 'innovation', 'respect'],
-        secondaires: ['forceCollective']
-      },
-      'Maintenance': {
-        prioritaires: ['engagement', 'forceCollective', 'respect'],
-        secondaires: ['innovation']
-      },
-      'Qualité': {
-        prioritaires: ['equite', 'respect', 'engagement'],
-        secondaires: ['convivialite']
-      },
-      'Comptabilité': {
-        prioritaires: ['equite', 'respect'],
-        secondaires: ['engagement']
-      }
-    },
-    // { [idQuestion]: true (oui) | false (non) }
+    questions: QUESTIONS,
+    // { [idQuestion]: true (oui) | false (non) } ; une question sans réponse compte « Non ».
     answers: {},
     results: null,
-    participantId: null
+    participantId: null,
+    // Chrono : horodatage de la première question, fin du quiz.
+    startedAt: null,
+    endedAt: null,
+    tempsEcoule: false
   }),
-
-  getters: {
-    isComplete: (state) =>
-      state.questions.length > 0 && state.questions.every(q => typeof state.answers[q.id] === 'boolean')
-  },
 
   actions: {
     resetQuestionnaire() {
@@ -57,25 +24,13 @@ export const useQuestionnaireStore = defineStore('questionnaire', {
       this.answers = {}
       this.results = null
       this.participantId = null
-    },
-
-    async loadQuestions() {
-      if (this.questions.length) return
-      this.isLoading = true
-      this.loadError = null
-      try {
-        this.questions = await useSupabase().fetchQuestions()
-        this.preloadImages()
-      } catch (error) {
-        console.error('Erreur de chargement des questions :', error)
-        this.loadError = 'Les questions n\'ont pas pu être chargées.'
-      } finally {
-        this.isLoading = false
-      }
+      this.startedAt = null
+      this.endedAt = null
+      this.tempsEcoule = false
     },
 
     preloadImages() {
-      if (!process.client) return
+      if (!import.meta.client) return
       this.questions.forEach(question => {
         const img = new Image()
         img.src = question.image
@@ -86,24 +41,48 @@ export const useQuestionnaireStore = defineStore('questionnaire', {
       this.userData = { ...data }
     },
 
+    startTimer() {
+      if (!this.startedAt) this.startedAt = Date.now()
+    },
+
     saveAnswer(questionId, answer) {
       this.answers[questionId] = answer
     },
 
-    // Enregistre le questionnaire une seule fois, à la dernière réponse.
-    async submit() {
+    // Enregistre le questionnaire une seule fois, à la dernière réponse ou à la fin du chrono.
+    async submit({ tempsEcoule = false } = {}) {
       if (this.participantId) return this.participantId
+      if (!this.userData || !this.startedAt) throw new Error('QUIZ_NON_DEMARRE')
+      if (!this.endedAt) {
+        this.endedAt = Date.now()
+        this.tempsEcoule = tempsEcoule
+      }
       const results = this.calculateResults()
-      this.participantId = await useSupabase().submitResults({
-        userData: this.userData,
+      const { quizDuration } = useRuntimeConfig().public
+      const record = {
+        id: crypto.randomUUID(),
+        createdAt: new Date(this.endedAt).toISOString(),
+        ...this.userData,
         reponses: this.answers,
-        departement: results.departement
-      })
+        scores: Object.fromEntries(
+          Object.entries(results.scores).map(([skill, s]) => [skill, { points: s.points, max: s.max }])
+        ),
+        metier: results.metier.label,
+        dureeSec: Math.min(Number(quizDuration), Math.round((this.endedAt - this.startedAt) / 1000)),
+        tempsEcoule: this.tempsEcoule
+      }
+      const res = await useBorne().saveParticipant(record)
+      if (!res?.ok) {
+        const error = new Error(res?.code || 'ENREGISTREMENT_IMPOSSIBLE')
+        error.code = res?.code
+        throw error
+      }
+      this.participantId = record.id
       return this.participantId
     },
 
     calculateResults() {
-      // Oui = 1 point, Non = 0 ; max = nombre de questions de la soft skill.
+      // Oui = 1 point, Non ou sans réponse = 0 ; max = nombre de questions de la soft skill.
       const scores = Object.fromEntries(
         Object.keys(SOFT_SKILLS).map(skill => [skill, { points: 0, max: 0, pct: 0 }])
       )
@@ -119,17 +98,20 @@ export const useQuestionnaireStore = defineStore('questionnaire', {
       })
 
       const softSkillsTriees = this.getSoftSkillsTriees(scores)
-      const departement = this.determinerDepartement(softSkillsTriees)
+      const [first, second] = softSkillsTriees
+      const key = metierPour(first.skill, second.skill)
 
       this.results = {
         scores,
-        departement,
-        softSkillsTriees
+        metier: { key, ...METIERS[key] },
+        softSkillsTriees,
+        sansReponse: this.questions.filter(q => typeof this.answers[q.id] !== 'boolean').length
       }
 
       return this.results
     },
 
+    // Pourcentage décroissant, puis nombre de « oui », puis ordre de SOFT_SKILLS (tri stable).
     getSoftSkillsTriees(scores) {
       return Object.entries(scores)
         .filter(([, score]) => score.max > 0)
@@ -139,35 +121,6 @@ export const useQuestionnaireStore = defineStore('questionnaire', {
           label: SOFT_SKILLS[skill],
           ...score
         }))
-    },
-
-    // Compare les 2 soft skills aux meilleurs pourcentages aux profils des départements.
-    determinerDepartement(softSkillsTriees) {
-      const topSkills = softSkillsTriees
-        .slice(0, 2)
-        .map(({ skill }) => skill)
-
-      let meilleurMatch = {
-        departement: null,
-        score: 0
-      }
-
-      Object.entries(this.departements).forEach(([departement, criteres]) => {
-        let score = 0
-        topSkills.forEach(skill => {
-          if (criteres.prioritaires.includes(skill)) score += 2
-          if (criteres.secondaires.includes(skill)) score += 1
-        })
-
-        if (score > meilleurMatch.score) {
-          meilleurMatch = {
-            departement,
-            score
-          }
-        }
-      })
-
-      return meilleurMatch.departement || 'Non déterminé'
     }
   }
 })

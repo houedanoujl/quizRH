@@ -1,59 +1,59 @@
+// Code PIN de l'administration de la borne : obligatoire pour construire l'installateur.
+// Pas de valeur par défaut : un PIN connu ouvrirait l'export des données des participants.
+const adminPin = process.env.NUXT_PUBLIC_ADMIN_PIN || ''
+if (['borne:build', 'borne:test'].includes(process.env.npm_lifecycle_event) && !/^\d{4,8}$/.test(adminPin)) {
+  throw new Error('NUXT_PUBLIC_ADMIN_PIN manquant ou invalide (4 à 8 chiffres) : NUXT_PUBLIC_ADMIN_PIN=xxxx yarn borne:build')
+}
+
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      // Projet Supabase du questionnaire : NUXT_SUPABASE_URL, NUXT_SUPABASE_KEY (clé publishable)
-      supabaseUrl: process.env.NUXT_SUPABASE_URL || '',
-      supabaseKey: process.env.NUXT_SUPABASE_KEY || ''
+      // Durée du quiz en secondes (NUXT_PUBLIC_QUIZ_DURATION). Figée au build.
+      quizDuration: 120,
+      // Vide : administration désactivée.
+      adminPin
     }
   },
   compatibilityDate: '2024-11-01',
 
   devtools: { enabled: false },
+  // Borne hors ligne : polices embarquées (pas de Google Fonts).
   css: [
+    '@fontsource/baloo-2/600.css',
+    '@fontsource/baloo-2/700.css',
+    '@fontsource/baloo-2/800.css',
+    '@fontsource/nunito/500.css',
+    '@fontsource/nunito/600.css',
+    '@fontsource/nunito/700.css',
+    '@fontsource/nunito/800.css',
     '@/assets/css/main.scss'
   ],
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
-    '@nuxt/image',
   ],
 
   app: {
     head: {
       htmlAttrs: { lang: 'fr' },
-      title: 'Questionnaire d\'orientation, CIPREL',
+      title: 'Quel métier est fait pour vous ? CIPREL',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
-        { name: 'description', content: 'Questionnaire d\'orientation professionnelle CIPREL : 18 questions oui/non pour découvrir vos soft skills et le département qui vous correspond.' },
+        { name: 'description', content: 'Quiz métier CIPREL : 18 questions oui/non en 2 minutes pour découvrir vos soft skills et le métier qui vous correspond.' },
         { name: 'theme-color', content: '#ed7f06' }
       ],
       link: [
-        { rel: 'icon', type: 'image/png', href: '/icons/ios/192.png' },
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;600;700;800&display=swap' }
+        { rel: 'icon', type: 'image/png', href: '/icons/ios/192.png' }
       ]
     }
   },
 
   nitro: {
-    preset: 'vercel',
     prerender: {
-      routes: ['/', '/questionnaire', '/results'],
+      routes: ['/', '/questionnaire', '/results', '/admin'],
       failOnError: true
     }
   },
 
-  generate: {
-    routes: ['/', '/questionnaire', '/results']
-  },
-  build: {
-    transpile: ['vue-bundle-renderer', 'html2canvas']
-  },
-  ssr: false,
-  target: 'static',
-  image: {
-    quality: 80,
-    format: ['webp', 'jpg']
-  },
+  ssr: false
 })

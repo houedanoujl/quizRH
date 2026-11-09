@@ -1,14 +1,34 @@
 <script setup>
 // En-tête : logo CIPREL sur plaque blanche, titre de la page et actions à droite.
+// 5 tapes rapides sur le logo ouvrent l'administration de la borne (code PIN demandé).
+// Pendant le chrono, le logo n'est pas un lien : impossible de quitter le quiz pour le
+// recommencer avec la même adresse email.
 defineProps({
-  title: { type: String, default: 'Questionnaire d\'orientation' },
+  title: { type: String, default: 'QUEL MÉTIER EST FAIT POUR VOUS ?' },
   subtitle: { type: String, default: '' },
 })
+
+const store = useQuestionnaireStore()
+const quizEnCours = computed(() => !!store.startedAt && !store.participantId)
+
+const taps = []
+const onLogo = () => {
+  const now = Date.now()
+  taps.push(now)
+  while (taps.length && now - taps[0] > 3000) taps.shift()
+  if (taps.length >= 5) {
+    taps.length = 0
+    navigateTo('/admin')
+  }
+}
 </script>
 
 <template>
   <header class="top">
-    <NuxtLink to="/" class="brand" aria-label="Accueil CIPREL">
+    <span v-if="quizEnCours" class="brand">
+      <img src="/images/logo.webp" alt="CIPREL" class="logo" width="168" height="43">
+    </span>
+    <NuxtLink v-else to="/" class="brand" aria-label="Accueil CIPREL" @click="onLogo">
       <img src="/images/logo.webp" alt="CIPREL" class="logo" width="168" height="43">
     </NuxtLink>
     <div class="title">

@@ -1,6 +1,6 @@
 # Questionnaire CiprelRH : les 18 questions oui/non
 
-Source : `supabase/migrations/0001_ciprel_quiz.sql` (table `ciprel_questions`). « Oui » rapporte 1 point à la soft skill de la question, « Non » 0 point.
+Source : `data/questions.js` (version client : `client/questions.csv`, via `yarn export:client`). « Oui » rapporte 1 point à la soft skill de la question, « Non » 0 point.
 
 | N° | Question | Soft skill | Image |
 |---|---|---|---|

@@ -1,6 +1,7 @@
 <script setup>
 // Une question oui/non illustrée. Deux grands boutons en pilule ; la réponse
-// choisie prend l'état « sélectionné » du quiz expert énergie. Raccourcis O / N.
+// choisie prend l'état « sélectionné » du quiz expert énergie.
+// Raccourcis clavier O / N conservés (aide masquée : borne tactile).
 const props = defineProps({
   question: { type: Object, required: true }, // { id, texte, image }
   number: { type: Number, required: true },
@@ -58,7 +59,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
           Non
         </button>
       </div>
-      <p class="hint" aria-hidden="true">Au clavier : <kbd>O</kbd> pour oui, <kbd>N</kbd> pour non.</p>
     </div>
   </section>
 </template>
@@ -73,7 +73,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .choice {
   display: flex; align-items: center; justify-content: center; gap: 10px;
-  min-height: 64px; padding: 10px 16px;
+  min-height: 72px; padding: 10px 16px;
   border-radius: var(--radius-answer); border: 3px solid var(--ink); background: var(--surface);
   font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; line-height: 1; color: var(--ink);
   cursor: pointer; box-shadow: 0 3px 8px rgba(31, 40, 50, .14);
@@ -91,7 +91,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .choice:hover:not(:disabled) { background: #f1f7fb; }
 .choice.selected,
 .choice.selected:hover:not(:disabled) { background: var(--orange); color: var(--ink); box-shadow: 0 0 0 5px #ffd9ae; }
-.hint { display: none; font-size: .9rem; color: var(--ink-2); }
 /* Très petits écrans : pastille et marges réduites pour que Oui / Non tiennent côte à côte. */
 @media (max-width: 359px) {
   .body { padding: 14px; }
@@ -99,15 +98,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .choice { gap: 6px; padding: 8px 10px; font-size: 1.2rem; }
   .mark { width: 28px; height: 28px; border-width: 2px; }
 }
-kbd {
-  display: inline-block; min-width: 1.6em; padding: 0 .35em; text-align: center;
-  border: 2px solid var(--line); border-radius: 6px; background: var(--tray);
-  font-family: var(--font-display); font-weight: 700; font-size: .85rem;
-}
 @media (min-width: 768px) {
   .question { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); min-height: 420px; }
   .media { aspect-ratio: auto; border-bottom: 0; border-right: 3px solid var(--ink); }
   .body { padding: 28px 30px; gap: 20px; }
-  .hint { display: block; }
 }
 </style>
