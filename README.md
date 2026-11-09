@@ -26,10 +26,10 @@ yarn export:client               # régénère client/questions.csv et client/me
 ## Construire l'installateur Windows
 
 ```bash
-NUXT_PUBLIC_ADMIN_PIN=1234 yarn borne:build   # → dist-borne/CIPREL Quiz Métier Setup x.y.z.exe
+BORNE_ADMIN_PIN=1234 yarn borne:build   # → dist-borne/CIPREL Quiz Métier Setup x.y.z.exe
 ```
 
-- `NUXT_PUBLIC_ADMIN_PIN` (4 à 8 chiffres) fixe le code PIN de l'administration. Il est **obligatoire** : sans lui, le build échoue. Après 5 codes faux, l'accès est bloqué 5 minutes.
+- `BORNE_ADMIN_PIN` (4 à 8 chiffres) fixe le code PIN de l'administration. Il est **obligatoire** : sans lui, le build échoue. Après 5 codes faux, l'accès est bloqué 5 minutes.
 - `NUXT_PUBLIC_QUIZ_DURATION` fixe la durée du quiz en secondes (120 par défaut).
 - La compilation Windows fonctionne depuis macOS, sans Wine (testé). L'installateur n'est pas signé.
 

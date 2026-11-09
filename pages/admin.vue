@@ -1,6 +1,6 @@
 <script setup>
 // Administration de la borne : nombre de participants, export CSV (clé USB), fermeture.
-// Accès : 5 tapes rapides sur le logo, puis code PIN (NUXT_PUBLIC_ADMIN_PIN, obligatoire au build).
+// Accès : 5 tapes rapides sur le logo, puis code PIN (BORNE_ADMIN_PIN, obligatoire au build).
 import { QUESTIONS } from '~/data/questions'
 import { participantsCsv } from '~/utils/csv'
 
