@@ -10,6 +10,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { pathToFileURL } = require('node:url')
 const { createStore } = require('./store.cjs')
+const { createAdmin } = require('./admin.cjs')
 
 const DEV_URL = process.env.BORNE_DEV_URL
 const KIOSQUE = !DEV_URL && !process.env.BORNE_FENETRE
@@ -23,6 +24,7 @@ if (!app.requestSingleInstanceLock()) app.quit()
 
 let win = null
 let store = null
+let admin = null
 
 // Fichier demandé, ou page SPA (200.html) pour les routes sans fichier.
 function resolveFile (pathname) {
@@ -55,6 +57,8 @@ function createWindow () {
   })
   // Pinch-zoom : désactivé par défaut dans Electron ; pas de menu, donc pas de Ctrl +/-.
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+  // Page rechargée : l'administration se reverrouille.
+  win.webContents.on('did-navigate', () => admin?.lock())
   win.webContents.on('will-navigate', (event, url) => {
     if (!url.startsWith('app://') && !(DEV_URL && url.startsWith(DEV_URL))) event.preventDefault()
   })
@@ -68,6 +72,9 @@ app.on('second-instance', () => {
 app.whenReady().then(() => {
   const dataDir = process.env.BORNE_DATA_DIR || app.getPath('userData')
   store = createStore(path.join(dataDir, 'participants.json'))
+  admin = createAdmin({ pinFile: path.join(__dirname, 'admin-pin.json'), dataDir })
+  // Liste et export des participants : administration déverrouillée uniquement.
+  const exigerAdmin = () => { if (!admin.estOuvert()) throw new Error('VERROUILLE') }
 
   protocol.handle('app', request => {
     const { pathname } = new URL(request.url)
@@ -77,8 +84,13 @@ app.whenReady().then(() => {
 
   ipcMain.handle('borne:hasEmail', (_e, email) => store.hasEmail(email))
   ipcMain.handle('borne:save', (_e, record) => store.save(record))
-  ipcMain.handle('borne:list', () => store.list())
+  ipcMain.handle('borne:adminStatus', () => admin.status())
+  ipcMain.handle('borne:unlock', (_e, pin) => admin.unlock(pin))
+  ipcMain.handle('borne:lock', () => admin.lock())
+  ipcMain.handle('borne:setAppareil', (_e, nom) => admin.setAppareil(nom))
+  ipcMain.handle('borne:list', () => { exigerAdmin(); return store.list() })
   ipcMain.handle('borne:saveFile', async (_e, { name, content }) => {
+    exigerAdmin()
     const { canceled, filePath } = await dialog.showSaveDialog(win, {
       title: 'Exporter les participants',
       defaultPath: path.join(app.getPath('documents'), path.basename(String(name))),

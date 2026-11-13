@@ -1,7 +1,12 @@
 // Accès au stockage de la borne.
 // - Dans l'application Electron : window.borne (electron/preload.cjs), fichier JSON sur le disque.
 // - Dans un navigateur (développement) : repli sur localStorage.
+//   L'administration n'y est ouverte qu'en développement (yarn dev), avec le code 0000.
 const KEY = 'ciprel-borne-participants'
+const KEY_APPAREIL = 'ciprel-borne-appareil'
+const appareilNavigateur = () => {
+  try { return localStorage.getItem(KEY_APPAREIL) || 'Navigateur' } catch { return 'Navigateur' }
+}
 
 export const normaliserEmail = email => String(email || '').trim().toLowerCase()
 
@@ -31,6 +36,19 @@ const navigateur = {
   async list () {
     return this.read()
   },
+  async adminStatus () {
+    return { actif: import.meta.dev, appareil: appareilNavigateur() }
+  },
+  async unlock (pin) {
+    return import.meta.dev && pin === '0000' ? { ok: true } : { ok: false, code: 'INCORRECT' }
+  },
+  async lock () {},
+  async setAppareil (nom) {
+    const appareil = String(nom ?? '').trim().slice(0, 40)
+    if (!appareil) return { ok: false, code: 'NOM_VIDE' }
+    try { localStorage.setItem(KEY_APPAREIL, appareil) } catch { return { ok: false, code: 'ECRITURE_IMPOSSIBLE' } }
+    return { ok: true, appareil }
+  },
   async saveFile (name, content) {
     const url = URL.createObjectURL(new Blob([content], { type: 'text/csv;charset=utf-8' }))
     const a = Object.assign(document.createElement('a'), { href: url, download: name })
@@ -51,6 +69,10 @@ export const useBorne = () => {
     hasEmail: email => api.hasEmail(normaliserEmail(email)),
     saveParticipant: record => api.saveParticipant(plain({ ...record, email: normaliserEmail(record.email) })),
     list: () => api.list(),
+    adminStatus: () => api.adminStatus(),
+    unlock: pin => api.unlock(String(pin)),
+    lock: () => api.lock(),
+    setAppareil: nom => api.setAppareil(String(nom)),
     saveFile: (name, content) => api.saveFile(name, content),
     quit: () => api.quit()
   }

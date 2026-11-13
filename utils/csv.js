@@ -21,18 +21,19 @@ const dateFr = iso => {
 }
 const ouiNon = v => (v === true ? 'Oui' : v === false ? 'Non' : '')
 
-export const participantsCsv = (participants, questions) => {
+// `appareil` : nom de l'appareil qui exporte (chaque appareil n'exporte que ses propres participants).
+export const participantsCsv = (participants, questions, appareil = '') => {
   const skills = Object.keys(SOFT_SKILLS)
   // Score = nombre de « oui » ; le maximum est dans l'en-tête (« 2/3 » deviendrait une date dans Excel).
   const max = s => questions.filter(q => q.categorie === s).length
   const header = [
-    'Date', 'Prénom', 'Nom', 'Email', 'Téléphone', 'Consentement', 'Date du consentement', 'Métier',
+    'Appareil', 'Date', 'Prénom', 'Nom', 'Email', 'Téléphone', 'Consentement', 'Date du consentement', 'Métier',
     ...skills.map(s => `${SOFT_SKILLS[s]} (sur ${max(s)})`),
     'Durée (s)', 'Temps écoulé',
     ...questions.map((q, i) => `Q${i + 1}`)
   ]
   const rows = participants.map(p => [
-    dateFr(p.createdAt), p.prenom, p.nom, p.email, p.contact,
+    appareil, dateFr(p.createdAt), p.prenom, p.nom, p.email, p.contact,
     p.consentement ? 'Oui' : 'Non', dateFr(p.consentementAt), p.metier,
     ...skills.map(s => p.scores?.[s]?.points ?? ''),
     p.dureeSec, p.tempsEcoule ? 'Oui' : 'Non',

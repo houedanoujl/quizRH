@@ -3,26 +3,16 @@ const store = useQuestionnaireStore()
 const results = computed(() => store.results)
 const top = computed(() => results.value?.softSkillsTriees.slice(0, 2) ?? [])
 
-// Texte du QR : prénom, métier, soft skills dominantes et début du texte métier.
-// Jamais d'email ni de téléphone. Taille limitée pour rester lisible par un téléphone.
-const QR_MAX_OCTETS = 420
+// Texte du QR : prénom, métier et soft skills dominantes. Jamais d'email ni de téléphone.
 const qrText = computed(() => {
   if (!results.value || !store.userData) return ''
   const date = new Date(store.endedAt || Date.now()).toLocaleDateString('fr-FR')
-  const lignes = [
+  return [
     'CIPREL - QUEL MÉTIER EST FAIT POUR VOUS ?',
     `${store.userData.prenom} - ${date}`,
     `Métier : ${results.value.metier.label}`,
     `Soft skills : ${top.value.map(s => `${s.label} ${s.points}/${s.max}`).join(', ')}`
-  ]
-  const base = lignes.join('\n')
-  const texte = results.value.metier.texte?.trim()
-  if (!texte) return base
-  const octets = s => new TextEncoder().encode(s).length
-  const complet = `${base}\n\n${texte}`
-  if (octets(complet) <= QR_MAX_OCTETS) return complet
-  const phrase = texte.match(/^.+?[.!?](\s|$)/)?.[0].trim()
-  return phrase && octets(`${base}\n\n${phrase}`) <= QR_MAX_OCTETS ? `${base}\n\n${phrase}` : base
+  ].join('\n')
 })
 
 const retournerAccueil = () => {
@@ -46,7 +36,6 @@ onMounted(() => {
           <p class="who">{{ store.userData.prenom }} {{ store.userData.nom }}</p>
           <h1>Le métier fait pour vous</h1>
           <p class="dept">{{ results.metier.label }}</p>
-          <p v-if="results.metier.texte" class="texte">{{ results.metier.texte }}</p>
           <p class="why">
             Vos soft skills les plus marquées :
             <strong>{{ top[0]?.label }}</strong> et
@@ -94,7 +83,6 @@ h1 { font-size: 1.15rem; font-weight: 700; }
   font-family: var(--font-display); font-weight: 800; font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.05;
   padding: 6px 20px; border-radius: 999px; border: 3px solid var(--ink); background: var(--orange);
 }
-.texte { font-size: 1.05rem; max-width: 62ch; }
 .why { color: var(--ink-2); }
 .why strong { color: var(--ink); }
 .note { color: var(--ink-2); font-size: .95rem; }

@@ -1,12 +1,12 @@
 // Métiers proposés et matrice « 2 soft skills dominantes → métier ».
 // Chaque métier reçoit 3 des 15 paires possibles : les 5 métiers peuvent sortir.
-// `texte` : présentation du métier affichée avec le résultat (à fournir par CIPREL).
+// Matrice validée par CIPREL le 13/11/2026.
 export const METIERS = {
-  rh: { label: 'Ressources Humaines', texte: '' },
-  production: { label: 'Production', texte: '' },
-  maintenance: { label: 'Maintenance', texte: '' },
-  qualite: { label: 'Qualité', texte: '' },
-  comptabilite: { label: 'Comptabilité', texte: '' },
+  rh: { label: 'Ressources Humaines' },
+  production: { label: 'Production' },
+  maintenance: { label: 'Maintenance' },
+  qualite: { label: 'Qualité' },
+  comptabilite: { label: 'Comptabilité' },
 }
 
 export const PAIRES = {

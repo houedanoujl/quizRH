@@ -31,11 +31,10 @@ writeFileSync('client/questions.csv', csv([
 ]))
 
 writeFileSync('client/metiers.csv', csv([
-  ['Métier', 'Recommandé quand les 2 soft skills dominantes sont', 'Texte à afficher avec le résultat (à rédiger)'],
+  ['Métier', 'Recommandé quand les 2 soft skills dominantes sont'],
   ...Object.entries(METIERS).map(([key, m]) => [
     m.label,
     PAIRES[key].map(([a, b]) => `${SOFT_SKILLS[a]} + ${SOFT_SKILLS[b]}`).join(' / '),
-    m.texte,
   ]),
 ]))
 

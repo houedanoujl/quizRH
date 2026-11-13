@@ -50,3 +50,5 @@ node_modules
 
 # Borne (Electron)
 dist-borne
+electron/admin-pin.json
+participants-fusion.csv

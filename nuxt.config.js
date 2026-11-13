@@ -1,18 +1,10 @@
-// Code PIN de l'administration de la borne : obligatoire pour construire l'installateur.
-// Pas de valeur par défaut : un PIN connu ouvrirait l'export des données des participants.
-// Variable hors préfixe NUXT_ : Nuxt convertirait « 0123 » en nombre (123).
-const adminPin = String(process.env.BORNE_ADMIN_PIN || '')
-if (['borne:build', 'borne:test'].includes(process.env.npm_lifecycle_event) && !/^\d{4,8}$/.test(adminPin)) {
-  throw new Error('BORNE_ADMIN_PIN manquant ou invalide (4 à 8 chiffres) : BORNE_ADMIN_PIN=xxxx yarn borne:build')
-}
-
+// Le code PIN de l'administration n'est jamais dans le site généré :
+// scripts/borne-pin.mjs en écrit une empreinte, vérifiée par electron/main.cjs.
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // Durée du quiz en secondes (NUXT_PUBLIC_QUIZ_DURATION). Figée au build.
-      quizDuration: 120,
-      // Vide : administration désactivée.
-      adminPin
+      quizDuration: 120
     }
   },
   compatibilityDate: '2024-11-01',

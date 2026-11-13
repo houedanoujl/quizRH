@@ -16,9 +16,11 @@
     "postinstall": "nuxt prepare",
     "borne:dev": "BORNE_DEV_URL=http://localhost:3000 electron .",
     "borne:preview": "nuxt generate && electron .",
-    "borne:build": "nuxt generate && electron-builder --win nsis --x64",
-    "borne:test": "nuxt generate && electron-builder --win portable --x64",
-    "export:client": "node scripts/export-client.mjs"
+    "borne:pin": "node scripts/borne-pin.mjs",
+    "borne:build": "node scripts/borne-pin.mjs && nuxt generate && electron-builder --win nsis --x64",
+    "borne:test": "node scripts/borne-pin.mjs && nuxt generate && electron-builder --win portable --x64",
+    "export:client": "node scripts/export-client.mjs",
+    "fusion": "node scripts/fusion-csv.mjs"
   },
   "devDependencies": {
     "@fontsource/baloo-2": "^5.2.5",
