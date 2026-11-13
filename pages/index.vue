@@ -8,7 +8,7 @@ onMounted(() => store.loadQuestions())
     <AppHeader title="Questionnaire d'orientation" subtitle="Ressources humaines" />
     <section class="hero panel">
       <div class="media">
-        <img src="/images/01.webp" alt="Une équipe CIPREL en casques de chantier réunie autour d'un ordinateur" width="1024" height="1024">
+        <img src="/images/debut.webp" alt="Une équipe CIPREL en tenue de travail réunie autour d'un ordinateur dans un open space" width="1448" height="1086">
       </div>
       <div class="body">
         <h1>Quel département vous ressemble ?</h1>
