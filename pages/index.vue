@@ -2,6 +2,9 @@
 const store = useQuestionnaireStore()
 const { quizDuration } = useRuntimeConfig().public
 const duree = formatDuree(quizDuration)
+// Cadenas de l'en-tête : accès à l'administration (code PIN), d'où l'on ferme l'application
+// sans clavier. Masqué sur la version web, où l'administration est désactivée.
+const adminVisible = useBorne().native || import.meta.dev
 
 // Le texte du bas tient sur une ligne : la taille de police s'ajuste à la largeur de l'écran.
 const footer = ref(null)
@@ -29,7 +32,11 @@ onBeforeUnmount(() => window.removeEventListener('resize', fit))
 
 <template>
   <div class="page">
-    <AppHeader title="Ressources humaines" />
+    <AppHeader title="Ressources humaines">
+      <NuxtLink v-if="adminVisible" to="/admin" class="btn ghost icon" aria-label="Administration">
+        <AppIcon name="lock" :size="20" />
+      </NuxtLink>
+    </AppHeader>
     <section class="hero panel">
       <div class="media">
         <img src="/images/debut.webp" alt="Une équipe CIPREL en tenue de travail réunie autour d'un ordinateur dans un open space" width="1448" height="1086">

@@ -12,7 +12,7 @@ Quiz métier pour des écrans tactiles Windows **hors ligne** : une borne (attra
   - Le consentement est obligatoire.
 - **QR code** : il est généré sur l'appareil et contient le texte des résultats (prénom, métier, soft skills). Il n'inclut ni l'email ni le téléphone.
 - **Inactivité** : après 90 s sans toucher l'écran, la borne revient à l'accueil.
-- **Administration** : touchez 5 fois rapidement le logo, puis entrez le code PIN. La page affiche le nombre de participants. Elle permet de nommer l'appareil (« Borne », « Tablette 1 »…), d'exporter un CSV pour Excel (par exemple sur une clé USB) et de quitter l'application.
+- **Administration** : touchez le cadenas en haut à droite de l'écran d'accueil (ou 5 fois rapidement le logo), puis entrez le code PIN. La page affiche le nombre de participants. Elle permet de nommer l'appareil (« Borne », « Tablette 1 »…), d'exporter un CSV pour Excel (par exemple sur une clé USB) et de quitter l'application.
   - Le guide destiné à la personne qui administre les appareils est dans `client/guide-administration.md`.
   - Le PIN n'est pas dans l'application : `scripts/borne-pin.mjs` en écrit une empreinte (scrypt) dans `electron/admin-pin.json`, vérifiée par `electron/admin.cjs`. Sans ce fichier, l'administration est désactivée.
   - Tant que le PIN n'est pas saisi, l'application refuse de lister ou d'exporter les participants.
@@ -51,4 +51,4 @@ Prérequis : Windows 10 ou 11 en **64 bits**. Pour une version 32 bits, ajoutez 
 2. Ouvrez l'administration et donnez un nom à l'appareil (« Borne », « Tablette 1 », « Tablette 2 »).
 3. Les données sont enregistrées dans `%APPDATA%\CIPREL Quiz Métier\participants.json`. Pour utiliser un autre dossier, définissez la variable `BORNE_DATA_DIR`.
 4. Clavier tactile : vérifiez qu'il s'ouvre quand on touche un champ du formulaire. Pour cela, activez dans Windows le réglage *Paramètres › Heure et langue › Saisie › Clavier tactile › Afficher le clavier tactile quand aucun clavier n'est connecté*.
-5. Pour fermer l'application, passez par l'administration (« Quitter l'application ») ou, avec un clavier branché, utilisez Alt+F4.
+5. Pour fermer l'application sans clavier, touchez le cadenas de l'écran d'accueil, entrez le code PIN, puis touchez « Quitter l'application ». Avec un clavier branché, Alt+F4 fonctionne aussi.

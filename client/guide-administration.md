@@ -9,10 +9,12 @@ Le code PIN de l'administration ne figure pas dans ce document. Il vous est tran
 ## Ouvrir l'administration
 
 1. Revenez à l'écran d'accueil du quiz.
-2. Touchez le logo 5 fois de suite, rapidement (en moins de 3 secondes).
+2. Touchez le cadenas, en haut à droite de l'écran.
 3. Saisissez le code PIN, puis touchez « Valider ».
 
-Le logo ne réagit pas pendant qu'un visiteur répond aux questions.
+Le cadenas n'est visible que sur l'écran d'accueil : il n'apparaît pas pendant qu'un visiteur répond aux questions.
+
+Autre accès, sans le cadenas : touchez le logo 5 fois de suite, rapidement (en moins de 3 secondes).
 
 Après 5 codes faux, l'accès est bloqué pendant 5 minutes. Éteindre ou redémarrer l'appareil ne lève pas le blocage : il faut attendre.
 
@@ -48,7 +50,7 @@ Ces fichiers contiennent des noms, des adresses email et des numéros de télép
 
 ## Fermer l'application
 
-Ouvrez l'administration, puis touchez « Quitter l'application ».
+Aucun clavier n'est nécessaire : ouvrez l'administration (cadenas de l'écran d'accueil, puis code PIN), puis touchez « Quitter l'application ».
 
 L'application redémarre toute seule à l'allumage de l'appareil.
 
